@@ -13,6 +13,20 @@
 #include <iostream>
 #include <fstream>
 
+BOOL CALLBACK enumWindowCallback(HWND hWnd, LPARAM lparam) {
+    auto curProcId = GetCurrentProcessId();
+    DWORD winProcId = 0;
+    GetWindowThreadProcessId(hWnd, &winProcId);
+    if (curProcId == winProcId)
+        SendMessage(hWnd, WM_CLOSE, 0, 0);
+    return TRUE;
+}
+
+void CloseWindow()
+{
+    EnumWindows((WNDENUMPROC)enumWindowCallback, 0);
+}
+
 extern "C" __declspec(dllexport) void InitializeASI()
 {
     static std::once_flag flag;
@@ -36,7 +50,7 @@ extern "C" __declspec(dllexport) void InitializeASI()
             // reinterpret_cast<LPDIRECT3DDEVICE8>(pDevice);
             std::ofstream outfile("onPresentEvent.txt");
             outfile.close();
-            TerminateProcess(GetCurrentProcess(), 0);
+            CloseWindow();
         };
 
         FusionDxHook::D3D8::onEndSceneEvent += [](D3D8_LPDIRECT3DDEVICE8 pDevice)
@@ -47,6 +61,12 @@ extern "C" __declspec(dllexport) void InitializeASI()
         FusionDxHook::D3D8::onResetEvent += [](D3D8_LPDIRECT3DDEVICE8 pDevice)
         {
             // reinterpret_cast<LPDIRECT3DDEVICE8>(pDevice);
+        };
+
+        FusionDxHook::D3D8::onReleaseEvent += []()
+        {
+            std::ofstream outfile("onReleaseEvent.txt");
+            outfile.close();
         };
 
         FusionDxHook::D3D8::onShutdownEvent += []()
@@ -65,7 +85,7 @@ extern "C" __declspec(dllexport) void InitializeASI()
         {
             std::ofstream outfile("onPresentEvent.txt");
             outfile.close();
-            TerminateProcess(GetCurrentProcess(), 0);
+            CloseWindow();
         };
 
         FusionDxHook::D3D9::onEndSceneEvent += [](LPDIRECT3DDEVICE9 pDevice)
@@ -76,6 +96,12 @@ extern "C" __declspec(dllexport) void InitializeASI()
         FusionDxHook::D3D9::onResetEvent += [](LPDIRECT3DDEVICE9 pDevice)
         {
 
+        };
+
+        FusionDxHook::D3D9::onReleaseEvent += []()
+        {
+            std::ofstream outfile("onReleaseEvent.txt");
+            outfile.close();
         };
 
         FusionDxHook::D3D9::onShutdownEvent += []()
@@ -94,7 +120,7 @@ extern "C" __declspec(dllexport) void InitializeASI()
         {
             std::ofstream outfile("onPresentEvent.txt");
             outfile.close();
-            TerminateProcess(GetCurrentProcess(), 0);
+            CloseWindow();
         };
 
         FusionDxHook::D3D10::onBeforeResizeEvent += [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags)
@@ -105,6 +131,12 @@ extern "C" __declspec(dllexport) void InitializeASI()
         FusionDxHook::D3D10::onAfterResizeEvent += [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags)
         {
 
+        };
+
+        FusionDxHook::D3D10::onReleaseEvent += []()
+        {
+            std::ofstream outfile("onReleaseEvent.txt");
+            outfile.close();
         };
 
         FusionDxHook::D3D10::onShutdownEvent += []()
@@ -123,7 +155,7 @@ extern "C" __declspec(dllexport) void InitializeASI()
         {
             std::ofstream outfile("onPresentEvent.txt");
             outfile.close();
-            TerminateProcess(GetCurrentProcess(), 0);
+            CloseWindow();
         };
 
         FusionDxHook::D3D10_1::onBeforeResizeEvent += [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags)
@@ -134,6 +166,12 @@ extern "C" __declspec(dllexport) void InitializeASI()
         FusionDxHook::D3D10_1::onAfterResizeEvent += [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags)
         {
 
+        };
+
+        FusionDxHook::D3D10_1::onReleaseEvent += []()
+        {
+            std::ofstream outfile("onReleaseEvent.txt");
+            outfile.close();
         };
 
         FusionDxHook::D3D10_1::onShutdownEvent += []()
@@ -152,7 +190,7 @@ extern "C" __declspec(dllexport) void InitializeASI()
         {
             std::ofstream outfile("onPresentEvent.txt");
             outfile.close();
-            TerminateProcess(GetCurrentProcess(), 0);
+            CloseWindow();
         };
 
         FusionDxHook::D3D11::onBeforeResizeEvent += [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags)
@@ -163,6 +201,12 @@ extern "C" __declspec(dllexport) void InitializeASI()
         FusionDxHook::D3D11::onAfterResizeEvent += [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags)
         {
 
+        };
+
+        FusionDxHook::D3D11::onReleaseEvent += []()
+        {
+            std::ofstream outfile("onReleaseEvent.txt");
+            outfile.close();
         };
 
         FusionDxHook::D3D11::onShutdownEvent += []()
@@ -181,7 +225,7 @@ extern "C" __declspec(dllexport) void InitializeASI()
         {
             std::ofstream outfile("onPresentEvent.txt");
             outfile.close();
-            TerminateProcess(GetCurrentProcess(), 0);
+            CloseWindow();
         };
 
         FusionDxHook::D3D12::onBeforeResizeEvent += [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags)
@@ -192,6 +236,12 @@ extern "C" __declspec(dllexport) void InitializeASI()
         FusionDxHook::D3D12::onAfterResizeEvent += [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags)
         {
 
+        };
+
+        FusionDxHook::D3D12::onReleaseEvent += []()
+        {
+            std::ofstream outfile("onReleaseEvent.txt");
+            outfile.close();
         };
 
         FusionDxHook::D3D12::onShutdownEvent += []()
@@ -234,7 +284,7 @@ extern "C" __declspec(dllexport) void InitializeASI()
         {
             std::ofstream outfile("onVkQueuePresentKHREvent.txt");
             outfile.close();
-            TerminateProcess(GetCurrentProcess(), 0);
+            CloseWindow();
         };
 
         FusionDxHook::VULKAN::onShutdownEvent += []()

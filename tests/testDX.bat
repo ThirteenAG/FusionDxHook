@@ -12,41 +12,46 @@ if exist onPresentEvent.txt (
     exit 1
 )
 start /W D3D9Sample.exe
-if exist onPresentEvent.txt (
+if exist onPresentEvent.txt if exist onReleaseEvent.txt (
     echo D3D9 x86 Hook Test PASSED
     del onPresentEvent.txt
+    del onReleaseEvent.txt
 ) else (
     echo D3D9 x86 Hook Test FAILED
     exit 1
 )
 start /W D3D10Sample.exe
-if exist onPresentEvent.txt (
+if exist onPresentEvent.txt if exist onReleaseEvent.txt (
     echo D3D10 x86 Hook Test PASSED
     del onPresentEvent.txt
+    del onReleaseEvent.txt
 ) else (
     echo D3D10 x86 Hook Test FAILED
     exit 1
 )
 start /W D3D10_1Sample.exe
-if exist onPresentEvent.txt (
+if exist onPresentEvent.txt if exist onReleaseEvent.txt (
     echo D3D10_1 x86 Hook Test PASSED
     del onPresentEvent.txt
+    del onReleaseEvent.txt
 ) else (
     echo D3D10_1 x86 Hook Test FAILED
     exit 1
 )
 start /W D3D11Sample.exe
-if exist onPresentEvent.txt (
+if exist onPresentEvent.txt if exist onReleaseEvent.txt (
     echo D3D11 x86 Hook Test PASSED
     del onPresentEvent.txt
+    del onReleaseEvent.txt
 ) else (
     echo D3D11 x86 Hook Test FAILED
     exit 1
 )
 start /W D3D12Sample.exe
-if exist onPresentEvent.txt (
+if exist onPresentEvent.txt if exist onReleaseEvent.txt (
     echo D3D12 x86 Hook Test PASSED
     del onPresentEvent.txt
+    del onReleaseEvent.txt
 ) else (
     echo D3D12 x86 Hook Test FAILED
     exit 1
@@ -65,41 +70,46 @@ del /s *.txt  >nul 2>&1
 copy "..\..\bin\*.asi" "*.asi"
 
 start /W D3D9Sample64.exe
-if exist onPresentEvent.txt (
+if exist onPresentEvent.txt if exist onReleaseEvent.txt (
     echo D3D9 x64 Hook Test PASSED
     del onPresentEvent.txt
+    del onReleaseEvent.txt
 ) else (
     echo D3D9 x64 Hook Test FAILED
     exit 1
 )
 start /W D3D10Sample64.exe
-if exist onPresentEvent.txt (
+if exist onPresentEvent.txt if exist onReleaseEvent.txt (
     echo D3D10 x64 Hook Test PASSED
     del onPresentEvent.txt
+    del onReleaseEvent.txt
 ) else (
     echo D3D10 x64 Hook Test FAILED
     exit 1
 )
 start /W D3D10_1Sample64.exe
-if exist onPresentEvent.txt (
+if exist onPresentEvent.txt if exist onReleaseEvent.txt (
     echo D3D10_1 x64 Hook Test PASSED
     del onPresentEvent.txt
+    del onReleaseEvent.txt
 ) else (
     echo D3D10_1 x64 Hook Test FAILED
     exit 1
 )
 start /W D3D11Sample64.exe
-if exist onPresentEvent.txt (
+if exist onPresentEvent.txt if exist onReleaseEvent.txt (
     echo D3D11 x64 Hook Test PASSED
     del onPresentEvent.txt
+    del onReleaseEvent.txt
 ) else (
     echo D3D11 x64 Hook Test FAILED
     exit 1
 )
 start /W D3D12Sample64.exe
-if exist onPresentEvent.txt (
+if exist onPresentEvent.txt if exist onReleaseEvent.txt (
     echo D3D12 x64 Hook Test PASSED
     del onPresentEvent.txt
+    del onReleaseEvent.txt
 ) else (
     echo D3D12 x64 Hook Test FAILED
     exit 1

@@ -1463,6 +1463,154 @@ private:
     }
 };
 
+class IDXGISwapChain2VTBL : public VTBL
+{
+private:
+    std::vector<const char*>& GetMethods() override {
+        static std::vector<const char*> methodsNames {
+            "QueryInterface",
+            "AddRef",
+            "Release",
+            "SetPrivateData",
+            "SetPrivateDataInterface",
+            "GetPrivateData",
+            "GetParent",
+            "GetDevice",
+            "Present",
+            "GetBuffer",
+            "SetFullscreenState",
+            "GetFullscreenState",
+            "GetDesc",
+            "ResizeBuffers",
+            "ResizeTarget",
+            "GetContainingOutput",
+            "GetFrameStatistics",
+            "GetLastPresentCount",
+            "GetDesc1",
+            "GetFullscreenDesc",
+            "GetHwnd",
+            "GetCoreWindow",
+            "Present1",
+            "IsTemporaryMonoSupported",
+            "GetRestrictToOutput",
+            "SetBackgroundColor",
+            "GetBackgroundColor",
+            "SetRotation",
+            "GetRotation",
+            "SetSourceSize",
+            "GetSourceSize",
+            "SetMaximumFrameLatency",
+            "GetMaximumFrameLatency",
+            "GetFrameLatencyWaitableObject",
+            "SetMatrixTransform",
+            "GetMatrixTransform",
+
+        };
+        return methodsNames;
+    }
+};
+
+class IDXGISwapChain3VTBL : public VTBL
+{
+private:
+    std::vector<const char*>& GetMethods() override {
+        static std::vector<const char*> methodsNames {
+            "QueryInterface",
+            "AddRef",
+            "Release",
+            "SetPrivateData",
+            "SetPrivateDataInterface",
+            "GetPrivateData",
+            "GetParent",
+            "GetDevice",
+            "Present",
+            "GetBuffer",
+            "SetFullscreenState",
+            "GetFullscreenState",
+            "GetDesc",
+            "ResizeBuffers",
+            "ResizeTarget",
+            "GetContainingOutput",
+            "GetFrameStatistics",
+            "GetLastPresentCount",
+            "GetDesc1",
+            "GetFullscreenDesc",
+            "GetHwnd",
+            "GetCoreWindow",
+            "Present1",
+            "IsTemporaryMonoSupported",
+            "GetRestrictToOutput",
+            "SetBackgroundColor",
+            "GetBackgroundColor",
+            "SetRotation",
+            "GetRotation",
+            "SetSourceSize",
+            "GetSourceSize",
+            "SetMaximumFrameLatency",
+            "GetMaximumFrameLatency",
+            "GetFrameLatencyWaitableObject",
+            "SetMatrixTransform",
+            "GetMatrixTransform",
+            "GetCurrentBackBufferIndex",
+            "CheckColorSpaceSupport",
+            "SetColorSpace1",
+            "ResizeBuffers1",
+        };
+        return methodsNames;
+    }
+};
+
+class IDXGISwapChain4VTBL : public VTBL
+{
+private:
+    std::vector<const char*>& GetMethods() override {
+        static std::vector<const char*> methodsNames {
+            "QueryInterface",
+            "AddRef",
+            "Release",
+            "SetPrivateData",
+            "SetPrivateDataInterface",
+            "GetPrivateData",
+            "GetParent",
+            "GetDevice",
+            "Present",
+            "GetBuffer",
+            "SetFullscreenState",
+            "GetFullscreenState",
+            "GetDesc",
+            "ResizeBuffers",
+            "ResizeTarget",
+            "GetContainingOutput",
+            "GetFrameStatistics",
+            "GetLastPresentCount",
+            "GetDesc1",
+            "GetFullscreenDesc",
+            "GetHwnd",
+            "GetCoreWindow",
+            "Present1",
+            "IsTemporaryMonoSupported",
+            "GetRestrictToOutput",
+            "SetBackgroundColor",
+            "GetBackgroundColor",
+            "SetRotation",
+            "GetRotation",
+            "SetSourceSize",
+            "GetSourceSize",
+            "SetMaximumFrameLatency",
+            "GetMaximumFrameLatency",
+            "GetFrameLatencyWaitableObject",
+            "SetMatrixTransform",
+            "GetMatrixTransform",
+            "GetCurrentBackBufferIndex",
+            "CheckColorSpaceSupport",
+            "SetColorSpace1",
+            "ResizeBuffers1",
+            "SetHDRMetaData",
+        };
+        return methodsNames;
+    }
+};
+
 class OpenGLVTBL : public VTBL
 {
 private:
