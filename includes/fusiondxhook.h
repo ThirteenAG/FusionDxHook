@@ -251,9 +251,9 @@ private:
 				IUnknown* pDevice = nullptr;
 				if (ptr->QueryInterface(__uuidof(IDirect3DDevice8), (void**)&pDevice) == S_OK)
 				{
-					if (pDevice == ptr)
+					auto ref_count = ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pDevice);
+					if (pDevice == ptr && ref_count == 1)
 						D3D8::onReleaseEvent();
-					((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pDevice);
 				}
 				return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
 			};
@@ -365,9 +365,9 @@ private:
 				IUnknown* pDevice = nullptr;
 				if (ptr->QueryInterface(__uuidof(IDirect3DDevice9), (void**)&pDevice) == S_OK)
 				{
-					if (pDevice == ptr)
+					auto ref_count = ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pDevice);
+					if (pDevice == ptr && ref_count == 1)
 						D3D9::onReleaseEvent();
-					((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pDevice);
 				}
 				return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
 			};
@@ -500,9 +500,9 @@ private:
 				IUnknown* pSwapChain = nullptr;
 				if (ptr->QueryInterface(__uuidof(IDXGISwapChain), (void**)&pSwapChain) == S_OK)
 				{
-					if (pSwapChain == ptr)
+					auto ref_count = ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pSwapChain);
+					if (pSwapChain == ptr && ref_count == 1)
 						D3D10::onReleaseEvent();
-					((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pSwapChain);
 				}
 				return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
 			};
@@ -632,9 +632,9 @@ private:
 				IUnknown* pSwapChain = nullptr;
 				if (ptr->QueryInterface(__uuidof(IDXGISwapChain), (void**)&pSwapChain) == S_OK)
 				{
-					if (pSwapChain == ptr)
+					auto ref_count = ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pSwapChain);
+					if (pSwapChain == ptr && ref_count == 1)
 						D3D10_1::onReleaseEvent();
-					((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pSwapChain);
 				}
 				return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
 			};
@@ -750,9 +750,9 @@ private:
 				IUnknown* pSwapChain = nullptr;
 				if (ptr->QueryInterface(__uuidof(IDXGISwapChain), (void**)&pSwapChain) == S_OK)
 				{
-					if (pSwapChain == ptr)
+					auto ref_count = ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pSwapChain);
+					if (pSwapChain == ptr && ref_count == 1)
 						D3D11::onReleaseEvent();
-					((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pSwapChain);
 				}
 				return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
 			};
@@ -903,9 +903,9 @@ private:
 					IUnknown* pSwapChain = nullptr;
 					if (ptr->QueryInterface(__uuidof(IDXGISwapChain), (void**)&pSwapChain) == S_OK)
 					{
-						if (pSwapChain == ptr)
+						auto ref_count = ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pSwapChain);
+						if (pSwapChain == ptr && ref_count == 1)
 							D3D12::onReleaseEvent();
-						((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pSwapChain);
 					}
 					return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
 				};
