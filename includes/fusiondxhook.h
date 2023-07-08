@@ -220,8 +220,6 @@ private:
 				std::forward_as_tuple(IDirect3DDevice8VTBL(), *(uintptr_t**)Device)
 			);
 
-			Device->Release();
-
 #if FUSIONDXHOOK_USE_MINHOOK
 			static void* presentOriginalPtr = nullptr;
 			static void* resetOriginalPtr = nullptr;
@@ -270,6 +268,7 @@ private:
 			bind(hD3D8, typeid(IDirect3DDevice8VTBL), IDirect3DDevice8VTBL().GetIndex("EndScene"), EndScene, &endSceneOriginalPtr);
 			bind(hD3D8, typeid(IDirect3DDevice8VTBL), IDirect3DDevice8VTBL().GetIndex("Release"), Release, &releaseOriginalPtr);
 #endif
+			Device->Release();
 		}
 		Direct3D8->Release();
 	}
@@ -324,8 +323,6 @@ private:
 			copyMethods(hD3D9,
 				std::forward_as_tuple(IDirect3DDevice9VTBL(), *(uintptr_t**)Device)
 			);
-
-			Device->Release();
 
 #if FUSIONDXHOOK_USE_MINHOOK
 			static void* presentOriginalPtr = nullptr;
@@ -388,6 +385,7 @@ private:
 			bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("EndScene"), EndScene, &endSceneOriginalPtr);
 			bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("Release"), Release, &releaseOriginalPtr);
 #endif
+			Device->Release();
 		}
 		Direct3D9->Release();
 	}
@@ -476,9 +474,6 @@ private:
 				std::forward_as_tuple(ID3D10DeviceVTBL(), *(uintptr_t**)Device)
 			);
 
-			SwapChain->Release();
-			Device->Release();
-
 #if FUSIONDXHOOK_USE_MINHOOK
 			static void* presentOriginalPtr = nullptr;
 			static void* resizeBuffersOriginalPtr = nullptr;
@@ -517,6 +512,8 @@ private:
 			bind(hD3D10, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, &resizeBuffersOriginalPtr);
 			bind(hD3D10, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Release"), Release, &releaseOriginalPtr);
 #endif
+			Device->Release();
+			SwapChain->Release();
 		}
 		Factory->Release();
 
@@ -608,9 +605,6 @@ private:
 				std::forward_as_tuple(IDXGISwapChainVTBL(), *(uintptr_t**)SwapChain)
 			);
 
-			SwapChain->Release();
-			Device->Release();
-
 #if FUSIONDXHOOK_USE_MINHOOK
 			static void* presentOriginalPtr = nullptr;
 			static void* resizeBuffersOriginalPtr = nullptr;
@@ -649,6 +643,8 @@ private:
 			bind(hD3D10_1, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, &resizeBuffersOriginalPtr);
 			bind(hD3D10_1, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Release"), Release, &releaseOriginalPtr);
 #endif
+			Device->Release();
+			SwapChain->Release();
 		}
 		Factory->Release();
 
@@ -685,7 +681,7 @@ private:
 		auto hWnd = HookWindow::GetHookWindow(hookWindowCtor);
 
 		D3D_FEATURE_LEVEL featureLevel;
-		const D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_11_1 };
+		const D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_11_0 };
 
 		DXGI_RATIONAL refreshRate;
 		refreshRate.Numerator = 60;
@@ -725,10 +721,6 @@ private:
 				std::forward_as_tuple(IDXGISwapChainVTBL(), *(uintptr_t**)SwapChain)
 			);
 
-			SwapChain->Release();
-			Device->Release();
-			Context->Release();
-
 #if FUSIONDXHOOK_USE_MINHOOK
 			static void* presentOriginalPtr = nullptr;
 			static void* resizeBuffersOriginalPtr = nullptr;
@@ -767,6 +759,9 @@ private:
 			bind(hD3D11, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, &resizeBuffersOriginalPtr);
 			bind(hD3D11, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Release"), Release, &releaseOriginalPtr);
 #endif
+			Context->Release();
+			Device->Release();
+			SwapChain->Release();
 		}
 	}
 #else
@@ -877,11 +872,6 @@ private:
 					std::forward_as_tuple(IDXGISwapChainVTBL(), *(uintptr_t**)SwapChain)
 				);
 
-				CommandQueue->Release();
-				CommandAllocator->Release();
-				CommandList->Release();
-				SwapChain->Release();
-
 #if FUSIONDXHOOK_USE_MINHOOK
 				static void* presentOriginalPtr = nullptr;
 				static void* resizeBuffersOriginalPtr = nullptr;
@@ -920,6 +910,10 @@ private:
 				bind(hD3D12, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, &resizeBuffersOriginalPtr);
 				bind(hD3D12, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Release"), Release, &releaseOriginalPtr);
 #endif
+				CommandQueue->Release();
+				CommandAllocator->Release();
+				CommandList->Release();
+				SwapChain->Release();
 			}
 			Device->Release();
 		}
