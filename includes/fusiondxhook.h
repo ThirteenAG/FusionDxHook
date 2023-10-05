@@ -1078,27 +1078,35 @@ private:
 			else
 			{
 				RegisterDllNotification();
-				GetCallbackList().emplace(module_name, std::forward<std::function<void()>>(fn));
+				std::wstring s(module_name);
+				std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+				GetCallbackList().emplace(s, std::forward<std::function<void()>>(fn));
 			}
 		}
 		static inline void RegisterUnloadCallback(std::wstring_view module_name, std::function<void()>&& fn)
 		{
 			RegisterDllNotification();
-			GetShutdownList().emplace(module_name, std::forward<std::function<void()>>(fn));
+			std::wstring s(module_name);
+			std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+			GetShutdownList().emplace(s, std::forward<std::function<void()>>(fn));
 		}
 	private:
 		static inline void callOnLoad(std::wstring_view module_name)
 		{
-			if (GetCallbackList().count(module_name.data()))
+			std::wstring s(module_name);
+			std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+			if (GetCallbackList().count(s.data()))
 			{
-				GetCallbackList().at(module_name.data())();
+				GetCallbackList().at(s.data())();
 			}
 		}
 		static inline void callOnUnload(std::wstring_view module_name)
 		{
-			if (GetShutdownList().count(module_name.data()))
+			std::wstring s(module_name);
+			std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+			if (GetShutdownList().count(s.data()))
 			{
-				GetShutdownList().at(module_name.data())();
+				GetShutdownList().at(s.data())();
 			}
 		}
 
