@@ -230,24 +230,25 @@ private:
                 static void* releaseOriginalPtr = nullptr;
 
                 auto D3D8Present = [](D3D8_LPDIRECT3DDEVICE8 pDevice, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) -> HRESULT
-                    {
-                        D3D8::onPresentEvent(pDevice);
-                        return ((HRESULT(WINAPI*)(D3D8_LPDIRECT3DDEVICE8, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*))presentOriginalPtr)(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
-                    };
+                {
+                    D3D8::onPresentEvent(pDevice);
+                    return ((HRESULT(WINAPI*)(D3D8_LPDIRECT3DDEVICE8, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*))presentOriginalPtr)(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+                };
 
                 auto D3D8Reset = [](D3D8_LPDIRECT3DDEVICE8 pDevice, D3DPRESENT_PARAMETERS_D3D8* pPresentationParameters) -> HRESULT
-                    {
-                        D3D8::onResetEvent(pDevice);
-                        return ((HRESULT(WINAPI*)(D3D8_LPDIRECT3DDEVICE8, D3DPRESENT_PARAMETERS_D3D8*))resetOriginalPtr)(pDevice, pPresentationParameters);
-                    };
+                {
+                    D3D8::onResetEvent(pDevice);
+                    return ((HRESULT(WINAPI*)(D3D8_LPDIRECT3DDEVICE8, D3DPRESENT_PARAMETERS_D3D8*))resetOriginalPtr)(pDevice, pPresentationParameters);
+                };
 
                 auto D3D8EndScene = [](D3D8_LPDIRECT3DDEVICE8 pDevice) -> HRESULT
-                    {
-                        D3D8::onEndSceneEvent(pDevice);
-                        return ((HRESULT(WINAPI*)(D3D8_LPDIRECT3DDEVICE8))endSceneOriginalPtr)(pDevice);
-                    };
+                {
+                    D3D8::onEndSceneEvent(pDevice);
+                    return ((HRESULT(WINAPI*)(D3D8_LPDIRECT3DDEVICE8))endSceneOriginalPtr)(pDevice);
+                };
 
-                auto D3D8Release = [](IUnknown* ptr) -> ULONG {
+                auto D3D8Release = [](IUnknown* ptr) -> ULONG
+                {
                     struct __declspec(uuid("7385e5df-8fe8-41d5-86b6-d7b48547b6cf")) IDirect3DDevice8;
                     IUnknown* pDevice = nullptr;
                     if (ptr->QueryInterface(__uuidof(IDirect3DDevice8), (void**)&pDevice) == S_OK)
@@ -257,7 +258,7 @@ private:
                             D3D8::onReleaseEvent();
                     }
                     return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
-                    };
+                };
 
                 static HRESULT(WINAPI* Present)(D3D8_LPDIRECT3DDEVICE8, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*) = D3D8Present;
                 static HRESULT(WINAPI* Reset)(D3D8_LPDIRECT3DDEVICE8, D3DPRESENT_PARAMETERS_D3D8*) = D3D8Reset;
@@ -339,33 +340,38 @@ private:
                 static void* endSceneOriginalPtr = nullptr;
                 static void* releaseOriginalPtr = nullptr;
 
-                auto D3D9Present = [](LPDIRECT3DDEVICE9 pDevice, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) -> HRESULT {
+                auto D3D9Present = [](LPDIRECT3DDEVICE9 pDevice, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) -> HRESULT
+                {
                     D3D9::onPresentEvent(pDevice);
                     return ((HRESULT(WINAPI*)(LPDIRECT3DDEVICE9, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*))presentOriginalPtr)(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
-                    };
+                };
 
-                auto D3D9PresentEx = [](LPDIRECT3DDEVICE9EX pDevice, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion, DWORD dwFlags) -> HRESULT {
+                auto D3D9PresentEx = [](LPDIRECT3DDEVICE9EX pDevice, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion, DWORD dwFlags) -> HRESULT
+                {
                     D3D9::onPresentEvent(pDevice);
                     return ((HRESULT(WINAPI*)(LPDIRECT3DDEVICE9EX, const RECT*, const RECT*, HWND, const RGNDATA*, DWORD))presentExOriginalPtr)(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, dwFlags);
-                    };
+                };
 
-                auto D3D9Reset = [](LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) -> HRESULT {
+                auto D3D9Reset = [](LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) -> HRESULT
+                {
                     D3D9::onResetEvent(pDevice);
                     return ((HRESULT(WINAPI*)(LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS*))resetOriginalPtr)(pDevice, pPresentationParameters);
-                    };
+                };
 
-                auto D3D9ResetEx = [](LPDIRECT3DDEVICE9EX pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters, D3DDISPLAYMODEEX* pFullscreenDisplayMode) -> HRESULT {
+                auto D3D9ResetEx = [](LPDIRECT3DDEVICE9EX pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters, D3DDISPLAYMODEEX* pFullscreenDisplayMode) -> HRESULT
+                {
                     D3D9::onResetEvent(pDevice);
                     return ((HRESULT(WINAPI*)(LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS*, D3DDISPLAYMODEEX*))resetExOriginalPtr)(pDevice, pPresentationParameters, pFullscreenDisplayMode);
-                    };
+                };
 
                 auto D3D9EndScene = [](LPDIRECT3DDEVICE9 pDevice) -> HRESULT
-                    {
-                        D3D9::onEndSceneEvent(pDevice);
-                        return ((HRESULT(WINAPI*)(LPDIRECT3DDEVICE9))endSceneOriginalPtr)(pDevice);
-                    };
+                {
+                    D3D9::onEndSceneEvent(pDevice);
+                    return ((HRESULT(WINAPI*)(LPDIRECT3DDEVICE9))endSceneOriginalPtr)(pDevice);
+                };
 
-                auto D3D9Release = [](IUnknown* ptr) -> ULONG {
+                auto D3D9Release = [](IUnknown* ptr) -> ULONG
+                {
                     IUnknown* pDevice = nullptr;
                     if (ptr->QueryInterface(__uuidof(IDirect3DDevice9), (void**)&pDevice) == S_OK)
                     {
@@ -374,7 +380,7 @@ private:
                             D3D9::onReleaseEvent();
                     }
                     return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
-                    };
+                };
 
                 static HRESULT(WINAPI* Present)(LPDIRECT3DDEVICE9, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*) = D3D9Present;
                 static HRESULT(WINAPI* PresentEx)(LPDIRECT3DDEVICE9EX, const RECT*, const RECT*, HWND, const RGNDATA*, DWORD) = D3D9PresentEx;
@@ -490,19 +496,22 @@ private:
                 static void* resizeBuffersOriginalPtr = nullptr;
                 static void* releaseOriginalPtr = nullptr;
 
-                auto D3D10Present = [](IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) -> HRESULT {
+                auto D3D10Present = [](IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) -> HRESULT
+                {
                     D3D10::onPresentEvent(pSwapChain);
                     return ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT))presentOriginalPtr)(pSwapChain, SyncInterval, Flags);
-                    };
+                };
 
-                auto D3D10ResizeBuffers = [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags) -> HRESULT {
+                auto D3D10ResizeBuffers = [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags) -> HRESULT
+                {
                     D3D10::onBeforeResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                     HRESULT result = ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT))resizeBuffersOriginalPtr)(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                     D3D10::onAfterResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                     return result;
-                    };
+                };
 
-                auto D3D10Release = [](IUnknown* ptr) -> ULONG {
+                auto D3D10Release = [](IUnknown* ptr) -> ULONG
+                {
                     IUnknown* pSwapChain = nullptr;
                     if (ptr->QueryInterface(__uuidof(IDXGISwapChain), (void**)&pSwapChain) == S_OK)
                     {
@@ -511,7 +520,7 @@ private:
                             D3D10::onReleaseEvent();
                     }
                     return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
-                    };
+                };
 
                 static HRESULT(WINAPI* Present)(IDXGISwapChain*, UINT, UINT) = D3D10Present;
                 static HRESULT(WINAPI* ResizeBuffers)(IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT) = D3D10ResizeBuffers;
@@ -625,19 +634,22 @@ private:
                 static void* resizeBuffersOriginalPtr = nullptr;
                 static void* releaseOriginalPtr = nullptr;
 
-                auto D3D10_1Present = [](IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) -> HRESULT {
+                auto D3D10_1Present = [](IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) -> HRESULT
+                {
                     D3D10_1::onPresentEvent(pSwapChain);
                     return ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT))presentOriginalPtr)(pSwapChain, SyncInterval, Flags);
-                    };
+                };
 
-                auto D3D10_1ResizeBuffers = [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags) -> HRESULT {
+                auto D3D10_1ResizeBuffers = [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags) -> HRESULT
+                {
                     D3D10_1::onBeforeResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                     HRESULT result = ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT))resizeBuffersOriginalPtr)(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                     D3D10_1::onAfterResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                     return result;
-                    };
+                };
 
-                auto D3D10_1Release = [](IUnknown* ptr) -> ULONG {
+                auto D3D10_1Release = [](IUnknown* ptr) -> ULONG
+                {
                     IUnknown* pSwapChain = nullptr;
                     if (ptr->QueryInterface(__uuidof(IDXGISwapChain), (void**)&pSwapChain) == S_OK)
                     {
@@ -646,7 +658,7 @@ private:
                             D3D10_1::onReleaseEvent();
                     }
                     return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
-                    };
+                };
 
                 static HRESULT(WINAPI* Present)(IDXGISwapChain*, UINT, UINT) = D3D10_1Present;
                 static HRESULT(WINAPI* ResizeBuffers)(IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT) = D3D10_1ResizeBuffers;
@@ -745,19 +757,22 @@ private:
                 static void* resizeBuffersOriginalPtr = nullptr;
                 static void* releaseOriginalPtr = nullptr;
 
-                auto D3D11Present = [](IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) -> HRESULT {
+                auto D3D11Present = [](IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) -> HRESULT
+                {
                     D3D11::onPresentEvent(pSwapChain);
                     return ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT))presentOriginalPtr)(pSwapChain, SyncInterval, Flags);
-                    };
+                };
 
-                auto D3D11ResizeBuffers = [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags) -> HRESULT {
+                auto D3D11ResizeBuffers = [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags) -> HRESULT
+                {
                     D3D11::onBeforeResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                     HRESULT result = ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT))resizeBuffersOriginalPtr)(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                     D3D11::onAfterResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                     return result;
-                    };
+                };
 
-                auto D3D11Release = [](IUnknown* ptr) -> ULONG {
+                auto D3D11Release = [](IUnknown* ptr) -> ULONG
+                {
                     IUnknown* pSwapChain = nullptr;
                     if (ptr->QueryInterface(__uuidof(IDXGISwapChain), (void**)&pSwapChain) == S_OK)
                     {
@@ -766,7 +781,7 @@ private:
                             D3D11::onReleaseEvent();
                     }
                     return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
-                    };
+                };
 
                 static HRESULT(WINAPI* Present)(IDXGISwapChain*, UINT, UINT) = D3D11Present;
                 static HRESULT(WINAPI* ResizeBuffers)(IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT) = D3D11ResizeBuffers;
@@ -900,19 +915,22 @@ private:
                     static void* resizeBuffersOriginalPtr = nullptr;
                     static void* releaseOriginalPtr = nullptr;
 
-                    auto D3D12Present = [](IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) -> HRESULT {
+                    auto D3D12Present = [](IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) -> HRESULT
+                    {
                         D3D12::onPresentEvent(pSwapChain);
                         return ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT))presentOriginalPtr)(pSwapChain, SyncInterval, Flags);
-                        };
+                    };
 
-                    auto D3D12ResizeBuffers = [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags) -> HRESULT {
+                    auto D3D12ResizeBuffers = [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags) -> HRESULT
+                    {
                         D3D12::onBeforeResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                         HRESULT result = ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT))resizeBuffersOriginalPtr)(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                         D3D12::onAfterResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                         return result;
-                        };
+                    };
 
-                    auto D3D12Release = [](IUnknown* ptr) -> ULONG {
+                    auto D3D12Release = [](IUnknown* ptr) -> ULONG
+                    {
                         IUnknown* pSwapChain = nullptr;
                         if (ptr->QueryInterface(__uuidof(IDXGISwapChain), (void**)&pSwapChain) == S_OK)
                         {
@@ -921,7 +939,7 @@ private:
                                 D3D12::onReleaseEvent();
                         }
                         return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
-                        };
+                    };
 
                     static HRESULT(WINAPI* Present)(IDXGISwapChain*, UINT, UINT) = D3D12Present;
                     static HRESULT(WINAPI* ResizeBuffers)(IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT) = D3D12ResizeBuffers;
@@ -976,7 +994,8 @@ private:
             #if FUSIONDXHOOK_USE_MINHOOK
             static void* wglSwapBuffersOriginalPtr = nullptr;
 
-            auto OpenGLwglSwapBuffers = [](HDC hDc) -> BOOL {
+            auto OpenGLwglSwapBuffers = [](HDC hDc) -> BOOL
+            {
                 OPENGL::onSwapBuffersEvent(hDc);
                 return ((BOOL(__stdcall*)(HDC hDc))wglSwapBuffersOriginalPtr)(hDc);
             };
@@ -1023,12 +1042,14 @@ private:
             static void* vkQueuePresentKHROriginalPtr = nullptr;
             static void* vkCreateDeviceOriginalPtr = nullptr;
 
-            auto VULKANvkQueuePresentKHR = [](VkQueue queue, const VkPresentInfoKHR* pPresentInfo) -> VkResult {
+            auto VULKANvkQueuePresentKHR = [](VkQueue queue, const VkPresentInfoKHR* pPresentInfo) -> VkResult
+            {
                 VULKAN::onVkQueuePresentKHREvent(queue, pPresentInfo);
                 return ((VkResult(VKAPI_CALL*)(VkQueue, const VkPresentInfoKHR*))vkQueuePresentKHROriginalPtr)(queue, pPresentInfo);
             };
 
-            auto VULKANvkCreateDevice = [](VkPhysicalDevice gpu, const VkDeviceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) -> VkResult {
+            auto VULKANvkCreateDevice = [](VkPhysicalDevice gpu, const VkDeviceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) -> VkResult
+            {
                 VULKAN::onvkCreateDeviceEvent(gpu, pCreateInfo, pAllocator, pDevice);
                 return ((VkResult(VKAPI_CALL*)(VkPhysicalDevice, const VkDeviceCreateInfo*, const VkAllocationCallbacks*, VkDevice*))vkCreateDeviceOriginalPtr)(gpu, pCreateInfo, pAllocator, pDevice);
             };
