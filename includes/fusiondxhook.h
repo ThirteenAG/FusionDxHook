@@ -23,7 +23,7 @@
 //#define FUSIONDXHOOK_INCLUDE_D3D12    1
 //#define FUSIONDXHOOK_INCLUDE_OPENGL   1
 //#define FUSIONDXHOOK_INCLUDE_VULKAN   1
-//#define FUSIONDXHOOK_USE_MINHOOK      1
+//#define FUSIONDXHOOK_USE_SAFETYHOOK   1
 //#define DELAYED_BIND 2000ms
 
 #ifdef DELAYED_BIND
@@ -81,8 +81,8 @@ typedef enum VkResult {
 #endif
 #endif
 
-#if FUSIONDXHOOK_USE_MINHOOK
-#include "minhook/include/MinHook.h"
+#if FUSIONDXHOOK_USE_SAFETYHOOK
+#include "safetyhook/safetyhook.hpp"
 #endif
 
 
@@ -223,7 +223,7 @@ private:
                     std::forward_as_tuple(IDirect3DDevice8VTBL(), *(uintptr_t**)Device)
                 );
 
-                #if FUSIONDXHOOK_USE_MINHOOK
+                #if FUSIONDXHOOK_USE_SAFETYHOOK
                 static void* presentOriginalPtr = nullptr;
                 static void* resetOriginalPtr = nullptr;
                 static void* endSceneOriginalPtr = nullptr;
@@ -332,7 +332,7 @@ private:
                     std::forward_as_tuple(IDirect3DDevice9VTBL(), *(uintptr_t**)Device)
                 );
 
-                #if FUSIONDXHOOK_USE_MINHOOK
+                #if FUSIONDXHOOK_USE_SAFETYHOOK
                 static void* presentOriginalPtr = nullptr;
                 static void* presentExOriginalPtr = nullptr;
                 static void* resetOriginalPtr = nullptr;
@@ -491,7 +491,7 @@ private:
                     std::forward_as_tuple(ID3D10DeviceVTBL(), *(uintptr_t**)Device)
                 );
 
-                #if FUSIONDXHOOK_USE_MINHOOK
+                #if FUSIONDXHOOK_USE_SAFETYHOOK
                 static void* presentOriginalPtr = nullptr;
                 static void* resizeBuffersOriginalPtr = nullptr;
                 static void* releaseOriginalPtr = nullptr;
@@ -629,7 +629,7 @@ private:
                     std::forward_as_tuple(IDXGISwapChainVTBL(), *(uintptr_t**)SwapChain)
                 );
 
-                #if FUSIONDXHOOK_USE_MINHOOK
+                #if FUSIONDXHOOK_USE_SAFETYHOOK
                 static void* presentOriginalPtr = nullptr;
                 static void* resizeBuffersOriginalPtr = nullptr;
                 static void* releaseOriginalPtr = nullptr;
@@ -752,7 +752,7 @@ private:
                     std::forward_as_tuple(IDXGISwapChainVTBL(), *(uintptr_t**)SwapChain)
                 );
 
-                #if FUSIONDXHOOK_USE_MINHOOK
+                #if FUSIONDXHOOK_USE_SAFETYHOOK
                 static void* presentOriginalPtr = nullptr;
                 static void* resizeBuffersOriginalPtr = nullptr;
                 static void* releaseOriginalPtr = nullptr;
@@ -910,7 +910,7 @@ private:
                         std::forward_as_tuple(IDXGISwapChainVTBL(), *(uintptr_t**)SwapChain)
                     );
 
-                    #if FUSIONDXHOOK_USE_MINHOOK
+                    #if FUSIONDXHOOK_USE_SAFETYHOOK
                     static void* presentOriginalPtr = nullptr;
                     static void* resizeBuffersOriginalPtr = nullptr;
                     static void* releaseOriginalPtr = nullptr;
@@ -991,7 +991,7 @@ private:
                 deviceMethods.at(hOpenGL32).at(typeid(OpenGLVTBL)).at(i) = (uintptr_t*)GetProcAddress(hOpenGL32, ogl.GetMethod(i));
             }
 
-            #if FUSIONDXHOOK_USE_MINHOOK
+            #if FUSIONDXHOOK_USE_SAFETYHOOK
             static void* wglSwapBuffersOriginalPtr = nullptr;
 
             auto OpenGLwglSwapBuffers = [](HDC hDc) -> BOOL
@@ -1038,7 +1038,7 @@ private:
                 deviceMethods.at(hVulkan1).at(typeid(VulkanVTBL)).at(i) = (uintptr_t*)GetProcAddress(hVulkan1, vk.GetMethod(i));
             }
 
-            #if FUSIONDXHOOK_USE_MINHOOK
+            #if FUSIONDXHOOK_USE_SAFETYHOOK
             static void* vkQueuePresentKHROriginalPtr = nullptr;
             static void* vkCreateDeviceOriginalPtr = nullptr;
 
@@ -1071,9 +1071,6 @@ private:
 public:
     static inline void Init()
     {
-#if FUSIONDXHOOK_USE_MINHOOK
-        MH_Initialize();
-#endif
         // doesn't work without a thread
         DllCallbackHandler::RegisterCallback(L"d3d8.dll",     []() { std::thread([]() { HookD3D8();    }).detach(); });
         DllCallbackHandler::RegisterCallback(L"d3d9.dll",     []() { std::thread([]() { HookD3D9();    }).detach(); });
@@ -1090,24 +1087,27 @@ public:
     static inline void DeInit()
     {
         onShutdownEvent();
-
-//#if FUSIONDXHOOK_USE_MINHOOK
-//		MH_DisableHook(MH_ALL_HOOKS);
-//#endif
     }
 
-#if FUSIONDXHOOK_USE_MINHOOK
+#if FUSIONDXHOOK_USE_SAFETYHOOK
+    static inline std::map<uintptr_t*, SafetyHookInline> hooks;
     static inline bool bind(HMODULE module, std::type_index type_index, uint16_t func_index, void* function, void** original = nullptr)
     {
         auto target = deviceMethods.at(module).at(type_index).at(func_index);
-        if (MH_CreateHook(target, function, original) != MH_OK || MH_EnableHook(target) != MH_OK) {
-            return false;
-        }
+        auto hook = safetyhook::create_inline(target, function);
+        *original = hook.original<void*>();
+        hooks.emplace(target, std::move(hook));        
         return true;
     }
     static inline bool unbind(HMODULE module, std::type_index type_index, int32_t func_index)
     {
-        return MH_DisableHook(deviceMethods.at(module).at(type_index).at(func_index)) == MH_OK;
+        auto target = deviceMethods.at(module).at(type_index).at(func_index);
+        if (hooks.count(target))
+        {
+            hooks.erase(target);
+            return true;
+        }
+        return false;
     }
 #endif
 

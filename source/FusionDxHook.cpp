@@ -6,7 +6,7 @@
 #define FUSIONDXHOOK_INCLUDE_D3D12    1
 #define FUSIONDXHOOK_INCLUDE_OPENGL   1
 #define FUSIONDXHOOK_INCLUDE_VULKAN   1
-#define FUSIONDXHOOK_USE_MINHOOK      1
+#define FUSIONDXHOOK_USE_SAFETYHOOK   1
 
 #include "FusionDxHook.h"
 #include "ModuleList.hpp"

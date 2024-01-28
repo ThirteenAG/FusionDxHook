@@ -24,8 +24,8 @@ workspace "FusionDxHook"
    files { "source/resources/Versioninfo.rc" }
    includedirs { "source" }
    includedirs { "includes" }
-   includedirs { "includes/minhook" }
-   files { "includes/minhook/**/*.*" }
+   includedirs { "includes/safetyhook" }
+   files { "includes/safetyhook/*.*" }
    
    pbcommands = { 
       "setlocal EnableDelayedExpansion",
