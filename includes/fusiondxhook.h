@@ -224,27 +224,27 @@ private:
                 );
 
                 #if FUSIONDXHOOK_USE_SAFETYHOOK
-                static void* presentOriginalPtr = nullptr;
-                static void* resetOriginalPtr = nullptr;
-                static void* endSceneOriginalPtr = nullptr;
-                static void* releaseOriginalPtr = nullptr;
+                static SafetyHookInline presentOriginal = {};
+                static SafetyHookInline resetOriginal = {};
+                static SafetyHookInline endSceneOriginal = {};
+                static SafetyHookInline releaseOriginal = {};
 
                 auto D3D8Present = [](D3D8_LPDIRECT3DDEVICE8 pDevice, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) -> HRESULT
                 {
                     D3D8::onPresentEvent(pDevice);
-                    return ((HRESULT(WINAPI*)(D3D8_LPDIRECT3DDEVICE8, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*))presentOriginalPtr)(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+                    return presentOriginal.unsafe_stdcall<HRESULT>(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
                 };
 
                 auto D3D8Reset = [](D3D8_LPDIRECT3DDEVICE8 pDevice, D3DPRESENT_PARAMETERS_D3D8* pPresentationParameters) -> HRESULT
                 {
                     D3D8::onResetEvent(pDevice);
-                    return ((HRESULT(WINAPI*)(D3D8_LPDIRECT3DDEVICE8, D3DPRESENT_PARAMETERS_D3D8*))resetOriginalPtr)(pDevice, pPresentationParameters);
+                    return resetOriginal.unsafe_stdcall<HRESULT>(pDevice, pPresentationParameters);
                 };
 
                 auto D3D8EndScene = [](D3D8_LPDIRECT3DDEVICE8 pDevice) -> HRESULT
                 {
                     D3D8::onEndSceneEvent(pDevice);
-                    return ((HRESULT(WINAPI*)(D3D8_LPDIRECT3DDEVICE8))endSceneOriginalPtr)(pDevice);
+                    return endSceneOriginal.unsafe_stdcall<HRESULT>(pDevice);
                 };
 
                 auto D3D8Release = [](IUnknown* ptr) -> ULONG
@@ -253,11 +253,11 @@ private:
                     IUnknown* pDevice = nullptr;
                     if (ptr->QueryInterface(__uuidof(IDirect3DDevice8), (void**)&pDevice) == S_OK)
                     {
-                        auto ref_count = ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pDevice);
+                        auto ref_count = releaseOriginal.unsafe_stdcall<ULONG>(pDevice);
                         if (pDevice == ptr && ref_count == 1)
                             D3D8::onReleaseEvent();
                     }
-                    return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
+                    return releaseOriginal.stdcall<ULONG>(ptr);
                 };
 
                 static HRESULT(WINAPI* Present)(D3D8_LPDIRECT3DDEVICE8, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*) = D3D8Present;
@@ -267,10 +267,10 @@ private:
 
                 _DELAYED_BIND
 
-                bind(hD3D8, typeid(IDirect3DDevice8VTBL), IDirect3DDevice8VTBL().GetIndex("Present"), Present, &presentOriginalPtr);
-                bind(hD3D8, typeid(IDirect3DDevice8VTBL), IDirect3DDevice8VTBL().GetIndex("Reset"), Reset, &resetOriginalPtr);
-                bind(hD3D8, typeid(IDirect3DDevice8VTBL), IDirect3DDevice8VTBL().GetIndex("EndScene"), EndScene, &endSceneOriginalPtr);
-                bind(hD3D8, typeid(IDirect3DDevice8VTBL), IDirect3DDevice8VTBL().GetIndex("Release"), Release, &releaseOriginalPtr);
+                bind(hD3D8, typeid(IDirect3DDevice8VTBL), IDirect3DDevice8VTBL().GetIndex("Present"), Present, presentOriginal);
+                bind(hD3D8, typeid(IDirect3DDevice8VTBL), IDirect3DDevice8VTBL().GetIndex("Reset"), Reset, resetOriginal);
+                bind(hD3D8, typeid(IDirect3DDevice8VTBL), IDirect3DDevice8VTBL().GetIndex("EndScene"), EndScene, endSceneOriginal);
+                bind(hD3D8, typeid(IDirect3DDevice8VTBL), IDirect3DDevice8VTBL().GetIndex("Release"), Release, releaseOriginal);
                 #endif
                 Device->Release();
             }
@@ -333,41 +333,41 @@ private:
                 );
 
                 #if FUSIONDXHOOK_USE_SAFETYHOOK
-                static void* presentOriginalPtr = nullptr;
-                static void* presentExOriginalPtr = nullptr;
-                static void* resetOriginalPtr = nullptr;
-                static void* resetExOriginalPtr = nullptr;
-                static void* endSceneOriginalPtr = nullptr;
-                static void* releaseOriginalPtr = nullptr;
+                static SafetyHookInline presentOriginal = {};
+                static SafetyHookInline presentExOriginal = {};
+                static SafetyHookInline resetOriginal = {};
+                static SafetyHookInline resetExOriginal = {};
+                static SafetyHookInline endSceneOriginal = {};
+                static SafetyHookInline releaseOriginal = {};
 
                 auto D3D9Present = [](LPDIRECT3DDEVICE9 pDevice, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) -> HRESULT
                 {
                     D3D9::onPresentEvent(pDevice);
-                    return ((HRESULT(WINAPI*)(LPDIRECT3DDEVICE9, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*))presentOriginalPtr)(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+                    return presentOriginal.unsafe_stdcall<HRESULT>(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
                 };
 
                 auto D3D9PresentEx = [](LPDIRECT3DDEVICE9EX pDevice, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion, DWORD dwFlags) -> HRESULT
                 {
                     D3D9::onPresentEvent(pDevice);
-                    return ((HRESULT(WINAPI*)(LPDIRECT3DDEVICE9EX, const RECT*, const RECT*, HWND, const RGNDATA*, DWORD))presentExOriginalPtr)(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, dwFlags);
+                    return presentExOriginal.unsafe_stdcall<HRESULT>(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, dwFlags);
                 };
 
                 auto D3D9Reset = [](LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters) -> HRESULT
                 {
                     D3D9::onResetEvent(pDevice);
-                    return ((HRESULT(WINAPI*)(LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS*))resetOriginalPtr)(pDevice, pPresentationParameters);
+                    return resetOriginal.unsafe_stdcall<HRESULT>(pDevice, pPresentationParameters);
                 };
 
                 auto D3D9ResetEx = [](LPDIRECT3DDEVICE9EX pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters, D3DDISPLAYMODEEX* pFullscreenDisplayMode) -> HRESULT
                 {
                     D3D9::onResetEvent(pDevice);
-                    return ((HRESULT(WINAPI*)(LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS*, D3DDISPLAYMODEEX*))resetExOriginalPtr)(pDevice, pPresentationParameters, pFullscreenDisplayMode);
+                    return resetExOriginal.unsafe_stdcall<HRESULT>(pDevice, pPresentationParameters, pFullscreenDisplayMode);
                 };
 
                 auto D3D9EndScene = [](LPDIRECT3DDEVICE9 pDevice) -> HRESULT
                 {
                     D3D9::onEndSceneEvent(pDevice);
-                    return ((HRESULT(WINAPI*)(LPDIRECT3DDEVICE9))endSceneOriginalPtr)(pDevice);
+                    return endSceneOriginal.unsafe_stdcall<HRESULT>(pDevice);
                 };
 
                 auto D3D9Release = [](IUnknown* ptr) -> ULONG
@@ -375,11 +375,11 @@ private:
                     IUnknown* pDevice = nullptr;
                     if (ptr->QueryInterface(__uuidof(IDirect3DDevice9), (void**)&pDevice) == S_OK)
                     {
-                        auto ref_count = ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pDevice);
+                        auto ref_count = releaseOriginal.unsafe_stdcall<ULONG>(pDevice);
                         if (pDevice == ptr && ref_count == 1)
                             D3D9::onReleaseEvent();
                     }
-                    return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
+                    return releaseOriginal.unsafe_stdcall<ULONG>(ptr);
                 };
 
                 static HRESULT(WINAPI* Present)(LPDIRECT3DDEVICE9, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*) = D3D9Present;
@@ -391,12 +391,12 @@ private:
 
                 _DELAYED_BIND
 
-                bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("Present"), Present, &presentOriginalPtr);
-                bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("PresentEx"), PresentEx, &presentExOriginalPtr);
-                bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("Reset"), Reset, &resetOriginalPtr);
-                bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("ResetEx"), ResetEx, &resetExOriginalPtr);
-                bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("EndScene"), EndScene, &endSceneOriginalPtr);
-                bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("Release"), Release, &releaseOriginalPtr);
+                bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("Present"), Present, presentOriginal);
+                bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("PresentEx"), PresentEx, presentExOriginal);
+                bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("Reset"), Reset, resetOriginal);
+                bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("ResetEx"), ResetEx, resetExOriginal);
+                bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("EndScene"), EndScene, endSceneOriginal);
+                bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("Release"), Release, releaseOriginal);
                 #endif
                 Device->Release();
             }
@@ -492,20 +492,20 @@ private:
                 );
 
                 #if FUSIONDXHOOK_USE_SAFETYHOOK
-                static void* presentOriginalPtr = nullptr;
-                static void* resizeBuffersOriginalPtr = nullptr;
-                static void* releaseOriginalPtr = nullptr;
+                static SafetyHookInline presentOriginal = {};
+                static SafetyHookInline resizeBuffersOriginal = {};
+                static SafetyHookInline releaseOriginal = {};
 
                 auto D3D10Present = [](IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) -> HRESULT
                 {
                     D3D10::onPresentEvent(pSwapChain);
-                    return ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT))presentOriginalPtr)(pSwapChain, SyncInterval, Flags);
+                    return presentOriginal.unsafe_stdcall<HRESULT>(pSwapChain, SyncInterval, Flags);
                 };
 
                 auto D3D10ResizeBuffers = [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags) -> HRESULT
                 {
                     D3D10::onBeforeResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
-                    HRESULT result = ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT))resizeBuffersOriginalPtr)(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
+                    HRESULT result = resizeBuffersOriginal.unsafe_stdcall<HRESULT>(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                     D3D10::onAfterResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                     return result;
                 };
@@ -515,11 +515,11 @@ private:
                     IUnknown* pSwapChain = nullptr;
                     if (ptr->QueryInterface(__uuidof(IDXGISwapChain), (void**)&pSwapChain) == S_OK)
                     {
-                        auto ref_count = ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pSwapChain);
+                        auto ref_count = releaseOriginal.unsafe_stdcall<ULONG>(pSwapChain);
                         if (pSwapChain == ptr && ref_count == 1)
                             D3D10::onReleaseEvent();
                     }
-                    return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
+                    return releaseOriginal.unsafe_stdcall<ULONG>(ptr);
                 };
 
                 static HRESULT(WINAPI* Present)(IDXGISwapChain*, UINT, UINT) = D3D10Present;
@@ -528,9 +528,9 @@ private:
 
                 _DELAYED_BIND
 
-                bind(hD3D10, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Present"), Present, &presentOriginalPtr);
-                bind(hD3D10, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, &resizeBuffersOriginalPtr);
-                bind(hD3D10, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Release"), Release, &releaseOriginalPtr);
+                bind(hD3D10, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Present"), Present, presentOriginal);
+                bind(hD3D10, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, resizeBuffersOriginal);
+                bind(hD3D10, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Release"), Release, releaseOriginal);
                 #endif
                 Device->Release();
                 SwapChain->Release();
@@ -630,20 +630,20 @@ private:
                 );
 
                 #if FUSIONDXHOOK_USE_SAFETYHOOK
-                static void* presentOriginalPtr = nullptr;
-                static void* resizeBuffersOriginalPtr = nullptr;
-                static void* releaseOriginalPtr = nullptr;
+                static SafetyHookInline presentOriginal = {};
+                static SafetyHookInline resizeBuffersOriginal = {};
+                static SafetyHookInline releaseOriginal = {};
 
                 auto D3D10_1Present = [](IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) -> HRESULT
                 {
                     D3D10_1::onPresentEvent(pSwapChain);
-                    return ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT))presentOriginalPtr)(pSwapChain, SyncInterval, Flags);
+                    return presentOriginal.unsafe_stdcall<HRESULT>(pSwapChain, SyncInterval, Flags);
                 };
 
                 auto D3D10_1ResizeBuffers = [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags) -> HRESULT
                 {
                     D3D10_1::onBeforeResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
-                    HRESULT result = ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT))resizeBuffersOriginalPtr)(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
+                    HRESULT result = resizeBuffersOriginal.unsafe_stdcall<HRESULT>(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                     D3D10_1::onAfterResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                     return result;
                 };
@@ -653,11 +653,11 @@ private:
                     IUnknown* pSwapChain = nullptr;
                     if (ptr->QueryInterface(__uuidof(IDXGISwapChain), (void**)&pSwapChain) == S_OK)
                     {
-                        auto ref_count = ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pSwapChain);
+                        auto ref_count = releaseOriginal.unsafe_stdcall<ULONG>(pSwapChain);
                         if (pSwapChain == ptr && ref_count == 1)
                             D3D10_1::onReleaseEvent();
                     }
-                    return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
+                    return releaseOriginal.unsafe_stdcall<ULONG>(ptr);
                 };
 
                 static HRESULT(WINAPI* Present)(IDXGISwapChain*, UINT, UINT) = D3D10_1Present;
@@ -666,9 +666,9 @@ private:
 
                 _DELAYED_BIND
 
-                bind(hD3D10_1, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Present"), Present, &presentOriginalPtr);
-                bind(hD3D10_1, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, &resizeBuffersOriginalPtr);
-                bind(hD3D10_1, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Release"), Release, &releaseOriginalPtr);
+                bind(hD3D10_1, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Present"), Present, presentOriginal);
+                bind(hD3D10_1, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, resizeBuffersOriginal);
+                bind(hD3D10_1, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Release"), Release, releaseOriginal);
                 #endif
                 Device->Release();
                 SwapChain->Release();
@@ -753,20 +753,20 @@ private:
                 );
 
                 #if FUSIONDXHOOK_USE_SAFETYHOOK
-                static void* presentOriginalPtr = nullptr;
-                static void* resizeBuffersOriginalPtr = nullptr;
-                static void* releaseOriginalPtr = nullptr;
+                static SafetyHookInline presentOriginal = {};
+                static SafetyHookInline resizeBuffersOriginal = {};
+                static SafetyHookInline releaseOriginal = {};
 
                 auto D3D11Present = [](IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) -> HRESULT
                 {
                     D3D11::onPresentEvent(pSwapChain);
-                    return ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT))presentOriginalPtr)(pSwapChain, SyncInterval, Flags);
+                    return presentOriginal.unsafe_stdcall<HRESULT>(pSwapChain, SyncInterval, Flags);
                 };
 
                 auto D3D11ResizeBuffers = [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags) -> HRESULT
                 {
                     D3D11::onBeforeResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
-                    HRESULT result = ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT))resizeBuffersOriginalPtr)(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
+                    HRESULT result = resizeBuffersOriginal.unsafe_stdcall<HRESULT>(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                     D3D11::onAfterResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                     return result;
                 };
@@ -776,11 +776,11 @@ private:
                     IUnknown* pSwapChain = nullptr;
                     if (ptr->QueryInterface(__uuidof(IDXGISwapChain), (void**)&pSwapChain) == S_OK)
                     {
-                        auto ref_count = ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pSwapChain);
+                        auto ref_count = releaseOriginal.unsafe_stdcall<ULONG>(pSwapChain);
                         if (pSwapChain == ptr && ref_count == 1)
                             D3D11::onReleaseEvent();
                     }
-                    return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
+                    return releaseOriginal.unsafe_stdcall<ULONG>(ptr);
                 };
 
                 static HRESULT(WINAPI* Present)(IDXGISwapChain*, UINT, UINT) = D3D11Present;
@@ -789,9 +789,9 @@ private:
 
                 _DELAYED_BIND
 
-                bind(hD3D11, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Present"), Present, &presentOriginalPtr);
-                bind(hD3D11, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, &resizeBuffersOriginalPtr);
-                bind(hD3D11, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Release"), Release, &releaseOriginalPtr);
+                bind(hD3D11, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Present"), Present, presentOriginal);
+                bind(hD3D11, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, resizeBuffersOriginal);
+                bind(hD3D11, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Release"), Release, releaseOriginal);
                 #endif
                 Context->Release();
                 Device->Release();
@@ -911,20 +911,20 @@ private:
                     );
 
                     #if FUSIONDXHOOK_USE_SAFETYHOOK
-                    static void* presentOriginalPtr = nullptr;
-                    static void* resizeBuffersOriginalPtr = nullptr;
-                    static void* releaseOriginalPtr = nullptr;
+                    static SafetyHookInline presentOriginal = {};
+                    static SafetyHookInline resizeBuffersOriginal = {};
+                    static SafetyHookInline releaseOriginal = {};
 
                     auto D3D12Present = [](IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) -> HRESULT
                     {
                         D3D12::onPresentEvent(pSwapChain);
-                        return ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT))presentOriginalPtr)(pSwapChain, SyncInterval, Flags);
+                        return presentOriginal.unsafe_stdcall<HRESULT>(pSwapChain, SyncInterval, Flags);
                     };
 
                     auto D3D12ResizeBuffers = [](IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags) -> HRESULT
                     {
                         D3D12::onBeforeResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
-                        HRESULT result = ((HRESULT(WINAPI*)(IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT))resizeBuffersOriginalPtr)(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
+                        HRESULT result = resizeBuffersOriginal.unsafe_stdcall<HRESULT>(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                         D3D12::onAfterResizeEvent(pSwapChain, BufferCount, Width, Height, NewFormat, SwapChainFlags);
                         return result;
                     };
@@ -934,11 +934,11 @@ private:
                         IUnknown* pSwapChain = nullptr;
                         if (ptr->QueryInterface(__uuidof(IDXGISwapChain), (void**)&pSwapChain) == S_OK)
                         {
-                            auto ref_count = ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(pSwapChain);
+                            auto ref_count = releaseOriginal.unsafe_stdcall<ULONG>(pSwapChain);
                             if (pSwapChain == ptr && ref_count == 1)
                                 D3D12::onReleaseEvent();
                         }
-                        return ((ULONG(WINAPI*)(IUnknown*))releaseOriginalPtr)(ptr);
+                        return releaseOriginal.unsafe_stdcall<ULONG>(ptr);
                     };
 
                     static HRESULT(WINAPI* Present)(IDXGISwapChain*, UINT, UINT) = D3D12Present;
@@ -947,9 +947,9 @@ private:
 
                     _DELAYED_BIND
 
-                    bind(hD3D12, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Present"), Present, &presentOriginalPtr);
-                    bind(hD3D12, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, &resizeBuffersOriginalPtr);
-                    bind(hD3D12, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Release"), Release, &releaseOriginalPtr);
+                    bind(hD3D12, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Present"), Present, presentOriginal);
+                    bind(hD3D12, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, resizeBuffersOriginal);
+                    bind(hD3D12, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Release"), Release, releaseOriginal);
                     #endif
                     CommandQueue->Release();
                     CommandAllocator->Release();
@@ -992,19 +992,19 @@ private:
             }
 
             #if FUSIONDXHOOK_USE_SAFETYHOOK
-            static void* wglSwapBuffersOriginalPtr = nullptr;
+            static SafetyHookInline wglSwapBuffersOriginal = {};
 
             auto OpenGLwglSwapBuffers = [](HDC hDc) -> BOOL
             {
                 OPENGL::onSwapBuffersEvent(hDc);
-                return ((BOOL(__stdcall*)(HDC hDc))wglSwapBuffersOriginalPtr)(hDc);
+                return wglSwapBuffersOriginal.unsafe_stdcall<BOOL>(hDc);
             };
 
             static BOOL(__stdcall* wglSwapBuffers)(HDC) = OpenGLwglSwapBuffers;
 
             _DELAYED_BIND
 
-            bind(hOpenGL32, typeid(OpenGLVTBL), ogl.GetIndex("wglSwapBuffers"), wglSwapBuffers, &wglSwapBuffersOriginalPtr);
+            bind(hOpenGL32, typeid(OpenGLVTBL), ogl.GetIndex("wglSwapBuffers"), wglSwapBuffers, wglSwapBuffersOriginal);
             #endif
         });
     }
@@ -1039,19 +1039,19 @@ private:
             }
 
             #if FUSIONDXHOOK_USE_SAFETYHOOK
-            static void* vkQueuePresentKHROriginalPtr = nullptr;
-            static void* vkCreateDeviceOriginalPtr = nullptr;
+            static SafetyHookInline vkQueuePresentKHROriginal = {};
+            static SafetyHookInline vkCreateDeviceOriginal = {};
 
             auto VULKANvkQueuePresentKHR = [](VkQueue queue, const VkPresentInfoKHR* pPresentInfo) -> VkResult
             {
                 VULKAN::onVkQueuePresentKHREvent(queue, pPresentInfo);
-                return ((VkResult(VKAPI_CALL*)(VkQueue, const VkPresentInfoKHR*))vkQueuePresentKHROriginalPtr)(queue, pPresentInfo);
+                return vkQueuePresentKHROriginal.unsafe_stdcall<VkResult>(queue, pPresentInfo);
             };
 
             auto VULKANvkCreateDevice = [](VkPhysicalDevice gpu, const VkDeviceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) -> VkResult
             {
                 VULKAN::onvkCreateDeviceEvent(gpu, pCreateInfo, pAllocator, pDevice);
-                return ((VkResult(VKAPI_CALL*)(VkPhysicalDevice, const VkDeviceCreateInfo*, const VkAllocationCallbacks*, VkDevice*))vkCreateDeviceOriginalPtr)(gpu, pCreateInfo, pAllocator, pDevice);
+                return vkCreateDeviceOriginal.unsafe_stdcall<VkResult>(gpu, pCreateInfo, pAllocator, pDevice);
             };
 
             static VkResult(VKAPI_CALL* vkQueuePresentKHR)(VkQueue, const VkPresentInfoKHR*) = VULKANvkQueuePresentKHR;
@@ -1059,8 +1059,8 @@ private:
 
             _DELAYED_BIND
 
-            bind(hVulkan1, typeid(VulkanVTBL), vk.GetIndex("vkQueuePresentKHR"), vkQueuePresentKHR, &vkQueuePresentKHROriginalPtr);
-            bind(hVulkan1, typeid(VulkanVTBL), vk.GetIndex("vkCreateDevice"), vkCreateDevice, &vkCreateDeviceOriginalPtr);
+            bind(hVulkan1, typeid(VulkanVTBL), vk.GetIndex("vkQueuePresentKHR"), vkQueuePresentKHR, vkQueuePresentKHROriginal);
+            bind(hVulkan1, typeid(VulkanVTBL), vk.GetIndex("vkCreateDevice"), vkCreateDevice, vkCreateDeviceOriginal);
             #endif
         });
     }
@@ -1090,24 +1090,21 @@ public:
     }
 
 #if FUSIONDXHOOK_USE_SAFETYHOOK
-    static inline std::map<uintptr_t*, SafetyHookInline> hooks;
-    static inline bool bind(HMODULE module, std::type_index type_index, uint16_t func_index, void* function, void** original = nullptr)
+    static inline void bind(HMODULE module, std::type_index type_index, uint16_t func_index, void* function, SafetyHookInline& hook)
     {
         auto target = deviceMethods.at(module).at(type_index).at(func_index);
-        auto hook = safetyhook::create_inline(target, function);
-        *original = hook.original<void*>();
-        hooks.emplace(target, std::move(hook));        
-        return true;
-    }
-    static inline bool unbind(HMODULE module, std::type_index type_index, int32_t func_index)
-    {
-        auto target = deviceMethods.at(module).at(type_index).at(func_index);
-        if (hooks.count(target))
+        try
         {
-            hooks.erase(target);
-            return true;
+            safetyhook::execute_while_frozen([&]
+            {
+                hook = safetyhook::create_inline(target, function);
+            });
         }
-        return false;
+        catch (const std::exception& e) {}
+    }
+    static inline void unbind(SafetyHookInline& hook)
+    {
+        hook.reset();
     }
 #endif
 
