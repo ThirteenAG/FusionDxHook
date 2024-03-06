@@ -82,7 +82,9 @@ typedef enum VkResult {
 #endif
 
 #if FUSIONDXHOOK_USE_SAFETYHOOK
+#if !defined(SAFETYHOOK_ARCH_X86_32) && !defined(SAFETYHOOK_ARCH_X86_64)
 #include "safetyhook/safetyhook.hpp"
+#endif
 #endif
 
 
