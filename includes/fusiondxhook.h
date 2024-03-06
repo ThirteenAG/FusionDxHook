@@ -257,7 +257,7 @@ private:
                         if (pDevice == ptr && ref_count == 1)
                             D3D8::onReleaseEvent();
                     }
-                    return releaseOriginal.stdcall<ULONG>(ptr);
+                    return releaseOriginal.unsafe_stdcall<ULONG>(ptr);
                 };
 
                 static HRESULT(WINAPI* Present)(D3D8_LPDIRECT3DDEVICE8, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*) = D3D8Present;
@@ -1093,14 +1093,7 @@ public:
     static inline void bind(HMODULE module, std::type_index type_index, uint16_t func_index, void* function, SafetyHookInline& hook)
     {
         auto target = deviceMethods.at(module).at(type_index).at(func_index);
-        try
-        {
-            safetyhook::execute_while_frozen([&]
-            {
-                hook = safetyhook::create_inline(target, function);
-            });
-        }
-        catch (const std::exception& e) {}
+        hook = safetyhook::create_inline(target, function);
     }
     static inline void unbind(SafetyHookInline& hook)
     {
