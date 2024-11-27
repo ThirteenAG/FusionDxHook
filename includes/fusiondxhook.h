@@ -813,6 +813,7 @@ public:
         static inline Event<IDXGISwapChain*> onPresentEvent = {};
         static inline Event<IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT> onBeforeResizeEvent = {};
         static inline Event<IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT> onAfterResizeEvent = {};
+        static inline Event<ID3D12CommandQueue*, UINT, const ID3D12CommandList**> onExecuteCommandListsEvent = {};
         static inline Event<> onReleaseEvent = {};
     };
 private:
@@ -915,6 +916,7 @@ private:
                     #if FUSIONDXHOOK_USE_SAFETYHOOK
                     static SafetyHookInline presentOriginal = {};
                     static SafetyHookInline resizeBuffersOriginal = {};
+                    static SafetyHookInline executeCommandListsOriginal = {};
                     static SafetyHookInline releaseOriginal = {};
 
                     auto D3D12Present = [](IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) -> HRESULT
@@ -931,6 +933,12 @@ private:
                         return result;
                     };
 
+                    auto D3D12ExecuteCommandLists = [](ID3D12CommandQueue* pCommandQueue, UINT NumCommandLists, const ID3D12CommandList** ppCommandLists)
+                    {
+                        D3D12::onExecuteCommandListsEvent(pCommandQueue, NumCommandLists, ppCommandLists);
+                        return executeCommandListsOriginal.unsafe_stdcall(pCommandQueue, NumCommandLists, ppCommandLists);
+                    };
+
                     auto D3D12Release = [](IUnknown* ptr) -> ULONG
                     {
                         IUnknown* pSwapChain = nullptr;
@@ -945,6 +953,7 @@ private:
 
                     static HRESULT(WINAPI* Present)(IDXGISwapChain*, UINT, UINT) = D3D12Present;
                     static HRESULT(WINAPI* ResizeBuffers)(IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT) = D3D12ResizeBuffers;
+                    static void(WINAPI* ExecuteCommandLists)(ID3D12CommandQueue*, UINT, const ID3D12CommandList**) = D3D12ExecuteCommandLists;
                     static ULONG(WINAPI* Release)(IUnknown*) = D3D12Release;
 
                     _DELAYED_BIND
@@ -952,6 +961,7 @@ private:
                     bind(hD3D12, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Present"), Present, presentOriginal);
                     bind(hD3D12, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, resizeBuffersOriginal);
                     bind(hD3D12, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Release"), Release, releaseOriginal);
+                    bind(hD3D12, typeid(IDirect3DDevice12CommandQueueVTBL), IDirect3DDevice12CommandQueueVTBL().GetIndex("ExecuteCommandLists"), ExecuteCommandLists, executeCommandListsOriginal);
                     #endif
                     CommandQueue->Release();
                     CommandAllocator->Release();
