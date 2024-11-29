@@ -806,6 +806,8 @@ private:
 #endif
 
 #if FUSIONDXHOOK_INCLUDE_D3D12
+private:
+    static inline ptrdiff_t commandQueueOffset = 0;
 public:
     struct D3D12 {
         static inline Event<> onInitEvent = {};
@@ -815,6 +817,12 @@ public:
         static inline Event<IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT> onAfterResizeEvent = {};
         static inline Event<ID3D12CommandQueue*, UINT, const ID3D12CommandList**> onExecuteCommandListsEvent = {};
         static inline Event<> onReleaseEvent = {};
+        static inline ID3D12CommandQueue* GetCommandQueueFromSwapChain(IDXGISwapChain* pSwapChain)
+        {
+            if (commandQueueOffset)
+                return *(ID3D12CommandQueue**)((uintptr_t)pSwapChain + commandQueueOffset);
+            return nullptr;
+        }
     };
 private:
     static inline void HookD3D12()
@@ -912,6 +920,22 @@ private:
                         std::forward_as_tuple(ID3D12GraphicsCommandListVTBL(), *(uintptr_t**)CommandList),
                         std::forward_as_tuple(IDXGISwapChainVTBL(), *(uintptr_t**)SwapChain)
                     );
+
+                    for (int i = 0; i < 1024; i++)
+                    {
+                        uintptr_t swPtr = (uintptr_t)SwapChain;
+                        uintptr_t target = swPtr + (i * sizeof(uintptr_t));
+                        if (IsBadReadPtr((void*)target, sizeof(uintptr_t)))
+                            break;
+
+                        uintptr_t value = *(uintptr_t*)(target);
+
+                        if (value == (uintptr_t)CommandQueue)
+                        {
+                            commandQueueOffset = (i * sizeof(uintptr_t));
+                            break;
+                        }
+                    }
 
                     #if FUSIONDXHOOK_USE_SAFETYHOOK
                     static SafetyHookInline presentOriginal = {};
