@@ -393,6 +393,9 @@ private:
 
                 _DELAYED_BIND
 
+                hD3D9 = GetModuleHandleW(L"d3d9.dll");
+                if (!hD3D9) return;
+
                 bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("Present"), Present, presentOriginal);
                 bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("PresentEx"), PresentEx, presentExOriginal);
                 bind(hD3D9, typeid(IDirect3DDevice9VTBL), IDirect3DDevice9VTBL().GetIndex("Reset"), Reset, resetOriginal);
@@ -529,6 +532,9 @@ private:
                 static ULONG(WINAPI* Release)(IUnknown*) = D3D10Release;
 
                 _DELAYED_BIND
+
+                hD3D10 = GetModuleHandleW(L"d3d10.dll");
+                if (!hD3D10) return;
 
                 bind(hD3D10, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Present"), Present, presentOriginal);
                 bind(hD3D10, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, resizeBuffersOriginal);
@@ -668,6 +674,9 @@ private:
 
                 _DELAYED_BIND
 
+                hD3D10_1 = GetModuleHandleW(L"d3d10_1.dll");
+                if (!hD3D10_1) return;
+
                 bind(hD3D10_1, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Present"), Present, presentOriginal);
                 bind(hD3D10_1, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, resizeBuffersOriginal);
                 bind(hD3D10_1, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Release"), Release, releaseOriginal);
@@ -790,6 +799,9 @@ private:
                 static ULONG(WINAPI* Release)(IUnknown*) = D3D11Release;
 
                 _DELAYED_BIND
+
+                hD3D11 = GetModuleHandleW(L"d3d11.dll");
+                if (!hD3D11) return;
 
                 bind(hD3D11, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Present"), Present, presentOriginal);
                 bind(hD3D11, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, resizeBuffersOriginal);
@@ -982,6 +994,9 @@ private:
 
                     _DELAYED_BIND
 
+                    hD3D12 = GetModuleHandleW(L"d3d12.dll");
+                    if (!hD3D12) return;
+
                     bind(hD3D12, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Present"), Present, presentOriginal);
                     bind(hD3D12, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("ResizeBuffers"), ResizeBuffers, resizeBuffersOriginal);
                     bind(hD3D12, typeid(IDXGISwapChainVTBL), IDXGISwapChainVTBL().GetIndex("Release"), Release, releaseOriginal);
@@ -1040,6 +1055,9 @@ private:
 
             _DELAYED_BIND
 
+            hOpenGL32 = GetModuleHandleW(L"opengl32.dll");
+            if (!hOpenGL32) return;
+
             bind(hOpenGL32, typeid(OpenGLVTBL), ogl.GetIndex("wglSwapBuffers"), wglSwapBuffers, wglSwapBuffersOriginal);
             #endif
         });
@@ -1059,7 +1077,9 @@ public:
 private:
     static inline void HookVULKAN()
     {
-        DllCallbackHandler::RegisterUnloadCallback(L"vulkan-1.dll", []() { VULKAN::onShutdownEvent(); });
+        DllCallbackHandler::RegisterUnloadCallback(L"vulkan-1.dll", []() { 
+            VULKAN::onShutdownEvent(); 
+            });
 
         auto hVulkan1 = GetModuleHandleW(L"vulkan-1.dll");
         if (!hVulkan1) return;
@@ -1094,6 +1114,9 @@ private:
             static VkResult(VKAPI_CALL* vkCreateDevice)(VkPhysicalDevice, const VkDeviceCreateInfo*, const VkAllocationCallbacks*, VkDevice*) = VULKANvkCreateDevice;
 
             _DELAYED_BIND
+
+            hVulkan1 = GetModuleHandleW(L"vulkan-1.dll");
+            if (!hVulkan1) return;
 
             bind(hVulkan1, typeid(VulkanVTBL), vk.GetIndex("vkQueuePresentKHR"), vkQueuePresentKHR, vkQueuePresentKHROriginal);
             bind(hVulkan1, typeid(VulkanVTBL), vk.GetIndex("vkCreateDevice"), vkCreateDevice, vkCreateDeviceOriginal);
