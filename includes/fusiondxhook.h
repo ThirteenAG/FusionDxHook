@@ -251,9 +251,9 @@ private:
 
                 auto D3D8Release = [](IUnknown* ptr) -> ULONG
                 {
-                    struct __declspec(uuid("7385e5df-8fe8-41d5-86b6-d7b48547b6cf")) IDirect3DDevice8;
+                    struct __declspec(uuid("7385e5df-8fe8-41d5-86b6-d7b48547b6cf")) uuidIDirect3DDevice8;
                     IUnknown* pDevice = nullptr;
-                    if (ptr->QueryInterface(__uuidof(IDirect3DDevice8), (void**)&pDevice) == S_OK)
+                    if (ptr->QueryInterface(__uuidof(uuidIDirect3DDevice8), (void**)&pDevice) == S_OK)
                     {
                         auto ref_count = releaseOriginal.unsafe_stdcall<ULONG>(pDevice);
                         if (pDevice == ptr && ref_count == 1)
