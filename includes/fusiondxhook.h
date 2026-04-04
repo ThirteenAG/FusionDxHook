@@ -186,6 +186,7 @@ private:
 
         auto hD3D8 = GetModuleHandleW(L"d3d8.dll");
         if (!hD3D8) return;
+        HMODULE hD3D8Guard = LoadLibraryW(L"d3d8.dll");
         auto Direct3DCreate8 = GetProcAddress(hD3D8, "Direct3DCreate8");
         if (!Direct3DCreate8) return;
         auto Direct3D8 = ((D3D8_LPDIRECT3D8(WINAPI*)(uint32_t))(Direct3DCreate8))(220);
@@ -278,6 +279,9 @@ private:
             }
             Direct3D8->Release();
         });
+
+        if (hD3D8Guard)
+            FreeLibrary(hD3D8Guard);
     }
 #else
     static inline void HookD3D8() {}
@@ -300,6 +304,7 @@ private:
 
         auto hD3D9 = GetModuleHandleW(L"d3d9.dll");
         if (!hD3D9) return;
+        HMODULE hD3D9Guard = LoadLibraryW(L"d3d9.dll");
         auto Direct3DCreate9 = GetProcAddress(hD3D9, "Direct3DCreate9");
         if (!Direct3DCreate9) return;
         auto Direct3D9 = ((LPDIRECT3D9(WINAPI*)(uint32_t))(Direct3DCreate9))(D3D_SDK_VERSION);
@@ -407,6 +412,9 @@ private:
             }
             Direct3D9->Release();
         });
+
+        if (hD3D9Guard)
+            FreeLibrary(hD3D9Guard);
     }
 #else
     static inline void HookD3D9() {}
@@ -429,7 +437,7 @@ private:
 
         auto hD3D10 = GetModuleHandleW(L"d3d10.dll");
         if (!hD3D10) return;
-
+        HMODULE hD3D10Guard = LoadLibraryW(L"d3d10.dll");
         bool isDXGILoaded = false;
         auto hDXGI = GetModuleHandleW(L"dxgi.dll");
         if (!hDXGI)
@@ -548,6 +556,9 @@ private:
             if (!isDXGILoaded)
                 FreeLibrary(hDXGI);
         });
+
+        if (hD3D10Guard)
+            FreeLibrary(hD3D10Guard);
     }
 #else
     static inline void HookD3D10() {}
@@ -570,7 +581,7 @@ private:
 
         auto hD3D10_1 = GetModuleHandleW(L"d3d10_1.dll");
         if (!hD3D10_1) return;
-
+        HMODULE hD3D10_1Guard = LoadLibraryW(L"d3d10_1.dll");
         bool isDXGILoaded = false;
         auto hDXGI = GetModuleHandleW(L"dxgi.dll");
         if (!hDXGI)
@@ -689,6 +700,9 @@ private:
             if (!isDXGILoaded)
                 FreeLibrary(hDXGI);
         });
+
+        if (hD3D10_1Guard)
+            FreeLibrary(hD3D10_1Guard);
     }
 #else
     static inline void HookD3D10_1() {}
@@ -711,7 +725,7 @@ private:
 
         auto hD3D11 = GetModuleHandleW(L"d3d11.dll");
         if (!hD3D11) return;
-
+        HMODULE hD3D11Guard = LoadLibraryW(L"d3d11.dll");
         auto D3D11CreateDeviceAndSwapChain = GetProcAddress(hD3D11, "D3D11CreateDeviceAndSwapChain");
         if (D3D11CreateDeviceAndSwapChain == NULL)
             return;
@@ -812,6 +826,9 @@ private:
                 SwapChain->Release();
             }
         });
+
+        if (hD3D11Guard)
+            FreeLibrary(hD3D11Guard);
     }
 #else
     static inline void HookD3D11() {}
@@ -843,7 +860,7 @@ private:
 
         auto hD3D12 = GetModuleHandleW(L"d3d12.dll");
         if (!hD3D12) return;
-
+        HMODULE hD3D12Guard = LoadLibraryW(L"d3d12.dll");
         bool isDXGILoaded = false;
         auto hDXGI = GetModuleHandleW(L"dxgi.dll");
         if (!hDXGI)
@@ -1012,6 +1029,9 @@ private:
             if (!isDXGILoaded)
                 FreeLibrary(hDXGI);
         });
+
+        if (hD3D12Guard)
+            FreeLibrary(hD3D12Guard);
     }
 #else
     static inline void HookD3D12() {}
@@ -1031,7 +1051,7 @@ private:
 
         auto hOpenGL32 = GetModuleHandleW(L"opengl32.dll");
         if (!hOpenGL32) return;
-
+        HMODULE hOpenGL32Guard = LoadLibraryW(L"opengl32.dll");
         static std::once_flag flag;
         std::call_once(flag, [&]()
         {
@@ -1061,6 +1081,9 @@ private:
             bind(hOpenGL32, typeid(OpenGLVTBL), ogl.GetIndex("wglSwapBuffers"), wglSwapBuffers, wglSwapBuffersOriginal);
             #endif
         });
+
+        if (hOpenGL32Guard)
+            FreeLibrary(hOpenGL32Guard);
     }
 #else
     static inline void HookOPENGL() {}
@@ -1077,13 +1100,11 @@ public:
 private:
     static inline void HookVULKAN()
     {
-        DllCallbackHandler::RegisterUnloadCallback(L"vulkan-1.dll", []() { 
-            VULKAN::onShutdownEvent(); 
-            });
+        DllCallbackHandler::RegisterUnloadCallback(L"vulkan-1.dll", []() { VULKAN::onShutdownEvent(); });
 
         auto hVulkan1 = GetModuleHandleW(L"vulkan-1.dll");
         if (!hVulkan1) return;
-
+        HMODULE hVulkan1Guard = LoadLibraryW(L"vulkan-1.dll");
         static std::once_flag flag;
         std::call_once(flag, [&]()
         {
@@ -1122,6 +1143,9 @@ private:
             bind(hVulkan1, typeid(VulkanVTBL), vk.GetIndex("vkCreateDevice"), vkCreateDevice, vkCreateDeviceOriginal);
             #endif
         });
+
+        if (hVulkan1Guard)
+            FreeLibrary(hVulkan1Guard);
     }
 #else
     static inline void HookVULKAN() {}
