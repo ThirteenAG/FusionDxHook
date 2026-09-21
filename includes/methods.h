@@ -1,6 +1,7 @@
 #ifndef _D3DVTBL_H
 #define _D3DVTBL_H
 #include <stdint.h>
+#include <cstring>
 #include <algorithm>
 #include <vector>
 
@@ -12,15 +13,21 @@ public:
     const auto GetNumberOfMethods() {
         return GetMethods().size();
     }
+    // The names are compared by what they say and not by where they are: two literals of
+    // the same text are not promised to be one object, and a build that does not pool
+    // them has every lookup of this fail.
     const auto GetIndex(const char* name) {
-        auto iter = std::find(std::begin(GetMethods()), std::end(GetMethods()), name);
-        if (iter != std::end(GetMethods()))
-            return (int32_t)std::distance(std::begin(GetMethods()), iter);
+        auto& methods = GetMethods();
+        auto iter = std::find_if(std::begin(methods), std::end(methods),
+            [name](const char* method) { return std::strcmp(method, name) == 0; });
+
+        if (iter != std::end(methods))
+            return (int32_t)std::distance(std::begin(methods), iter);
         else
             return (int32_t)-1;
     }
     const auto GetMethod(int32_t index) {
-        if (index < static_cast<int32_t>(GetNumberOfMethods()))
+        if (index >= 0 && index < static_cast<int32_t>(GetNumberOfMethods()))
             return GetMethods()[index];
         else
             return "";
@@ -1973,3 +1980,18 @@ private:
     }
 };
 #endif
+
+// The frame of a window that draws with OpenGL is often handed over with
+// SwapBuffers instead of wglSwapBuffers, that is the one the gdi exports, and
+// the two are not the same function: only the applications that call into
+// opengl32 themselves end up in wglSwapBuffers.
+class Gdi32VTBL : public VTBL
+{
+private:
+    std::vector<const char*>& GetMethods() override {
+        static std::vector<const char*> methodsNames {
+            "SwapBuffers"
+        };
+        return methodsNames;
+    }
+};
