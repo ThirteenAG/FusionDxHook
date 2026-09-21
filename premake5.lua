@@ -1,70 +1,55 @@
-workspace "FusionDxHook"
-   configurations { "Release", "Debug" }
-   platforms { "Win32", "Win64" }
-   location "build"
-   objdir ("build/obj")
-   buildlog ("build/log/%{prj.name}.log")
-   buildoptions {"-std:c++latest"}
-   
-   kind "SharedLib"
-   language "C++"
-   targetextension ".asi"
-   characterset ("Unicode")
-   staticruntime "On"
-   
-   defines { "rsc_CompanyName=\"ThirteenAG\"" }
-   defines { "rsc_LegalCopyright=\"MIT License\""} 
-   defines { "rsc_FileVersion=\"1.0.0.0\"", "rsc_ProductVersion=\"1.0.0.0\"" }
-   defines { "rsc_InternalName=\"%{prj.name}\"", "rsc_ProductName=\"%{prj.name}\"", "rsc_OriginalFilename=\"FusionDxHook.asi\"" }
-   defines { "rsc_FileDescription=\"https://thirteenag.github.io/wfp\"" }
-   defines { "rsc_UpdateUrl=\"https://github.com/ThirteenAG/%{prj.name}\"" }
-   
-   files { "includes/*.h" }
-   files { "source/FusionDxHook.cpp" }
-   files { "source/resources/Versioninfo.rc" }
-   includedirs { "source" }
-   includedirs { "includes" }
-   includedirs { "includes/safetyhook" }
-   files { "includes/safetyhook/*.*" }
-   
-   pbcommands = { 
-      "setlocal EnableDelayedExpansion",
-      --"set \"path=" .. (gamepath) .. "\"",
-      "set file=$(TargetPath)",
-      "FOR %%i IN (\"%file%\") DO (",
-      "set filename=%%~ni",
-      "set fileextension=%%~xi",
-      "set target=!path!!filename!!fileextension!",
-      "if exist \"!target!\" copy /y \"!file!\" \"!target!\"",
-      ")" }
-
-   function setpaths (gamepath, exepath, scriptspath)
-      scriptspath = scriptspath or "scripts/"
-      if (gamepath) then
-         cmdcopy = { "set \"path=" .. gamepath .. scriptspath .. "\"" }
-         table.insert(cmdcopy, pbcommands)
-         postbuildcommands (cmdcopy)
-         debugdir (gamepath)
-         if (exepath) then
-            debugcommand (gamepath .. exepath)
-            dir, file = exepath:match'(.*/)(.*)'
-            debugdir (gamepath .. (dir or ""))
-         end
-      end
+-- This repository only exists to produce the .asi that the applications in tests/
+-- are started with, so nothing else but that is configured here. Visual Studio 2026
+-- has no mixed platform solutions, therefore the 32 bit and the 64 bit build are a
+-- workspace each.
+function FusionDxHookSetup(name, platform, arch)
+   workspace (name)
+      configurations { "Release", "Debug" }
+      platforms { platform }
+      architecture (arch)
+      location "build"
+      objdir ("build/obj")
       targetdir ("bin")
-   end
-   
-   filter "configurations:Debug"
-      defines "DEBUG"
-      symbols "On"
 
-   filter "configurations:Release"
-      defines "NDEBUG"
-      optimize "On"
+      kind "SharedLib"
+      language "C++"
+      targetextension ".asi"
+      characterset ("Unicode")
+      staticruntime "On"
+      cppdialect "C++latest"
+
+      -- read by source/resources/Versioninfo.rc
+      defines { "rsc_CompanyName=\"ThirteenAG\"" }
+      defines { "rsc_LegalCopyright=\"MIT License\"" }
+      defines { "rsc_FileVersion=\"1.0.0.0\"", "rsc_ProductVersion=\"1.0.0.0\"" }
+      defines { "rsc_InternalName=\"%{prj.name}\"", "rsc_ProductName=\"%{prj.name}\"", "rsc_OriginalFilename=\"FusionDxHook.asi\"" }
+      defines { "rsc_FileDescription=\"https://thirteenag.github.io/wfp\"" }
+      defines { "rsc_UpdateUrl=\"https://github.com/ThirteenAG/FusionDxHook\"" }
+
+      files { "includes/*.h" }
+      files { "includes/safetyhook/*.*" }
+      files { "source/FusionDxHook.cpp" }
+      files { "source/resources/Versioninfo.rc" }
+      includedirs { "includes" }
+      includedirs { "includes/safetyhook" }
+      includedirs { "source" }
+      includedirs { "source/resources" }
+
+      filter "configurations:Debug"
+         defines "DEBUG"
+         symbols "On"
+
+      filter "configurations:Release"
+         defines "NDEBUG"
+         optimize "On"
+
+      filter {}
+end
+
+FusionDxHookSetup("FusionDxHook", "Win32", "x86")
 
 project "FusionDxHook"
-   architecture "x32"
-   setpaths("Z:/WFP/Games/PPSSPP/", "PPSSPPWindows.exe")
+
+FusionDxHookSetup("FusionDxHook64", "x64", "x64")
+
 project "FusionDxHook64"
-   architecture "x64"
-   setpaths("Z:/WFP/Games/PPSSPP/", "PPSSPPWindows.exe")

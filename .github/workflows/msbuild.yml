@@ -6,7 +6,8 @@ on:
   workflow_dispatch:
 
 env:
-  SOLUTION_FILE_PATH: build/FusionDxHook.sln
+  SOLUTION_FILE_PATH: build/FusionDxHook.slnx
+  SOLUTION_FILE_PATH64: build/FusionDxHook64.slnx
   BUILD_CONFIGURATION: Release
 
 permissions:
@@ -14,23 +15,27 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
       with:
         submodules: recursive
 
     - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1
+      uses: microsoft/setup-msbuild@main
       
     - name: Configure build
       shell: cmd
       run: ./premake5.bat
       
-    - name: Build
+    - name: Build x86
       shell: cmd
-      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=Win32 ${{env.SOLUTION_FILE_PATH}}
+
+    - name: Build x64
+      shell: cmd
+      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=x64 ${{env.SOLUTION_FILE_PATH64}}
       
     - name: Test
       shell: cmd

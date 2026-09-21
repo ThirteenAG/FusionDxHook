@@ -72,13 +72,15 @@ typedef void VkPresentInfoKHR;
 typedef void VkSwapchainCreateInfoKHR;
 typedef void* VkSwapchainKHR;
 typedef enum VkResult {
-    VK_SUCCESS = 0
+    VK_SUCCESS = 0,
+    VK_ERROR_DEVICE_LOST = -4
 } VkResult;
 #if defined(_WIN32)
 #define VKAPI_CALL __stdcall
 #else
 #define VKAPI_CALL
 #endif
+typedef VkResult(VKAPI_CALL* PFN_vkGetDeviceProcAddr)(VkDevice, const char*);
 //#include <vulkan/vulkan.h>
 #endif
 #endif
